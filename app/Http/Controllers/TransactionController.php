@@ -103,6 +103,9 @@ class TransactionController extends Controller
                 $sender->decrement('balance', $totalAmount);
                 $receiver->increment('balance', $amount);
 
+                $sender->refresh();
+                $receiver->refresh();
+
                 $transaction = Transaction::create([
                     'sender_id' => $senderId,
                     'receiver_id' => $receiverId,

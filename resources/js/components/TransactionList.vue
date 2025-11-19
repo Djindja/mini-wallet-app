@@ -10,7 +10,7 @@
         <div style="display: flex; justify-content: space-between;">
           <div>
             <strong>{{ tx.type }}</strong><br>
-            <small>{{ tx.direction === 'incoming' ? 'To: ' + tx.receiver?.name : 'From: ' + tx.sender?.name }}</small>
+            <small>{{ tx.direction === 'incoming' ? 'To: ' + tx.receiver?.name + ' from ' + tx.sender?.name : 'From: ' + tx.sender?.name + ' to ' + tx.receiver?.name }}</small>
           </div>
           <div :style="{ color: tx.direction === 'incoming' ? 'red' : 'green' }">
             {{ tx.direction === 'incoming' ? '-' : '+' }}${{ parseFloat(tx.amount).toFixed(2) }}
