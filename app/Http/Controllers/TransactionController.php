@@ -62,13 +62,21 @@ class TransactionController extends Controller
         $validator = Validator::make($request->all(), [
             'receiver_id' => 'required|integer|exists:users,id',
             'amount' => 'required|numeric|min:0.01',
-            'description' => 'nullable|string|max:500',
+        ], [
+            'receiver_id.required' => 'Please enter a recipient user ID.',
+            'receiver_id.integer' => 'User ID must be a number.',
+            'receiver_id.exists' => 'This user does not exist.',
+            'amount.required' => 'Please enter an amount.',
+            'amount.numeric' => 'Amount must be a number.',
+            'amount.min' => 'Amount must be at least $0.01.',
         ]);
 
         if ($validator->fails()) {
+            $firstError = $validator->errors()->first();
+
             return response()->json([
                 'success' => false,
-                'message' => 'Validation error',
+                'message' => $firstError,
                 'errors' => $validator->errors()
             ], 422);
         }
