@@ -15,10 +15,13 @@ class TransactionController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        $transactions = Transaction::where('sender_id', $user->id)
-            ->orWhere('receiver_id', $user->id)
+
+        $transactions = Transaction::where(function($query) use ($user) {
+            $query->where('sender_id', $user->id)
+                ->orWhere('receiver_id', $user->id);
+        })
             ->with(['sender:id,name,email', 'receiver:id,name,email'])
-            ->orderBy('created_at', 'desc')
+            ->latest('created_at')
             ->paginate(20);
 
         $transactionData = $transactions->map(function ($transaction) use ($user) {
@@ -59,13 +62,21 @@ class TransactionController extends Controller
         $validator = Validator::make($request->all(), [
             'receiver_id' => 'required|integer|exists:users,id',
             'amount' => 'required|numeric|min:0.01',
-            'description' => 'nullable|string|max:500',
+        ], [
+            'receiver_id.required' => 'Please enter a recipient user ID.',
+            'receiver_id.integer' => 'User ID must be a number.',
+            'receiver_id.exists' => 'This user does not exist.',
+            'amount.required' => 'Please enter an amount.',
+            'amount.numeric' => 'Amount must be a number.',
+            'amount.min' => 'Amount must be at least $0.01.',
         ]);
 
         if ($validator->fails()) {
+            $firstError = $validator->errors()->first();
+
             return response()->json([
                 'success' => false,
-                'message' => 'Validation error',
+                'message' => $firstError,
                 'errors' => $validator->errors()
             ], 422);
         }
@@ -99,6 +110,9 @@ class TransactionController extends Controller
 
                 $sender->decrement('balance', $totalAmount);
                 $receiver->increment('balance', $amount);
+
+                $sender->refresh();
+                $receiver->refresh();
 
                 $transaction = Transaction::create([
                     'sender_id' => $senderId,

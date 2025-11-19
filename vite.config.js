@@ -15,4 +15,9 @@ export default defineConfig({
             vue: 'vue/dist/vue.esm-bundler.js',
         },
     },
+    server: {
+        watch: {
+            ignored: ['**/vendor/**', '**/storage/**', '**/node_modules/**']
+        }
+    }
 });

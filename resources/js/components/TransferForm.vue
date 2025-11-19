@@ -1,5 +1,5 @@
 <template>
-  <div style="background: white; padding: 20px; border-radius: 8px;">
+  <div style="background: white; padding: 20px;">
     <h2>Send Money</h2>
 
     <p>Balance: ${{ balance.toFixed(2) }}</p>
@@ -18,14 +18,14 @@
       <p v-if="error" style="color: red;">{{ error }}</p>
       <p v-if="success" style="color: green;">{{ success }}</p>
 
-      <button type="submit" :disabled="loading" style="width: 100%; padding: 10px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer;">
+      <button type="submit" :disabled="loading" style="width: 100%; padding: 10px; background: #667eea; color: white; border: none; cursor: pointer;">
         {{ loading ? 'Sending...' : 'Send Money' }}
       </button>
     </form>
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import axios from 'axios';
 
 export default {
