@@ -25,7 +25,7 @@
   </div>
 </template>
 
-<script lang="js">
+<script lang="ts">
 import axios from 'axios';
 
 export default {
