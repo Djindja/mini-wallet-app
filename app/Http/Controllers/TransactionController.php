@@ -15,10 +15,13 @@ class TransactionController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        $transactions = Transaction::where('sender_id', $user->id)
-            ->orWhere('receiver_id', $user->id)
+
+        $transactions = Transaction::where(function($query) use ($user) {
+            $query->where('sender_id', $user->id)
+                ->orWhere('receiver_id', $user->id);
+        })
             ->with(['sender:id,name,email', 'receiver:id,name,email'])
-            ->orderBy('created_at', 'desc')
+            ->latest('created_at')
             ->paginate(20);
 
         $transactionData = $transactions->map(function ($transaction) use ($user) {
